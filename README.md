@@ -1,5 +1,5 @@
 # claspyth-nocernlib
-PYTHIA generator for clas12
+PYTHIA based generator for clas12 (HERMES version with some changes)
 
 To install
 `git clone https://github.com/JeffersonLab/claspyth-nocernlib.git`
