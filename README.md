@@ -11,7 +11,7 @@ Need to define the path for the pdf sets using env variable CLASDIS_PDF to defin
 
 Example
 `./claspyth --trig 10000000 --nmax 10000  < input.10.6gev.with-comments`
-will write `gemc lund type` data files with 10K events in the directory `eventfiles` (should be created by hand) with total of 10M events.
+will write `gemc lund type` data files with 10K events in the directory `tmp` (should be created by hand) with total of 10M events.
 A number of control parameters, including JETSET settings are listed in the editable input data file input.10.6gev.with-comments
 
 To get more command line options
