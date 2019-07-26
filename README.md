@@ -7,7 +7,8 @@ To install
 `cd claspyth-nocernlib` 
 `make`
 
-Need to define the path for the pdf sets using env variable CLASDIS_PDF to define the path to pdf directory
+
+Need to create a tmp directory and define the path for the pdf sets using env variable CLASDIS_PDF to define the path to pdf directory
 
 Example
 `./claspyth --trig 10000000 --nmax 10000  < input.10.6gev.with-comments`
