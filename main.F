@@ -3,6 +3,7 @@ C...Double precision and integer declarations.
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 #include "phydata1234.inc"
+      character*100  claspythfiles,fileinp
 
       INTEGER PYK,PYCHGE,PYCOMP
       REAL pyth_xsec,rccorr,sigobs,sigtrue
@@ -102,6 +103,15 @@ c       call pylist(12)
            MSTP(199)=1
          endif
        endif 
+      call getenv('CLASPYTHIA_DECLIST',claspythfiles)
+      write(fileinp,'(A,A)') trim(claspythfiles),'/pythdeclist-curr.dat'
+       OPEN (unit=77,file=fileinp,status='UNKNOWN')
+       OPEN (unit=77,file='pythdeclist-curr.dat',status='UNKNOWN')
+       CALL PYUPDA(1,77)
+       call PYLIST(12)
+       close(77)
+c       stop
+c
        call pyinit ('FIXT',beam,target, pbeam)
 c
 c     read the random seed
@@ -296,7 +306,7 @@ c
           DATA itotal /0/
           character*200  fname
 c
-          real plu
+          real plu,random_num,xelex,yeley,zelez
           integer jj,il,i,j,istat,jc,m
           logical lFirst
           DATA lFirst /.TRUE./
@@ -357,19 +367,22 @@ c
                  do i=1,N
                   if(k(i,1).lt.11) j=j+1   ! save space
                  enddo
-                 write(41,101) j,1,1,1.0*elpol,1.0*elpol,
-     6     beam_pid,cl_beam_energy,targ_id,process_id,PARI(1)*1000000.0
+                 write(41,111) j,1.0,gQ2,gW,1.0*elpol,1.0*elpol
                else
                 write(41,101) N,1,1,1.0*elpol,1.0*elpol,
      6     beam_pid,cl_beam_energy,targ_id,process_id,PARI(1)*1000000.0
+     6,radweight
                endif
 c
  111           FORMAT(2x,I5,10F10.4)
  110           FORMAT(2x,10I10)
  112           FORMAT(2x,10F10.4)
 c 101      FORMAT(2x,I10,2F4.0,2I3,5F6.3)
- 101      FORMAT(2x,I10,2I6,2F5.1,I5,F10.3,2I5,E14.7)
+ 101      FORMAT(2x,I10,2I6,2F5.1,I5,F10.3,2I5,3E14.7)
  102      FORMAT(2x,I3,F4.0,I5,I7,2I3,5F10.4,2X,5F10.4)
+          xelex=(random_num()-0.5)*cl_rast
+          yeley=(random_num()-0.5)*cl_rast
+          zelez=cl_zpos+(random_num()-0.5)*cl_zwidth
               do i=1,N
                if(il.eq.2) then
                  if(k(i,1).lt.11) then   ! save space
@@ -378,8 +391,11 @@ c 101      FORMAT(2x,I10,2F4.0,2I3,5F6.3)
                    write(41,112) 0.0,0.0,cl_zpos,0.0,0.0
                  endif 
                else
-                 write (41,102) i,plu(k(i,2)),(k(i,j),j=1,4),(P(i,j),j=1,5)
-     6                                                   ,(V(i,j)*0.1,j=1,3)
+                 V(i,1)=xelex+V(i,1)*0.1
+                 V(i,2)=yeley+V(i,2)*0.1
+                 V(i,3)=zelez+V(i,3)*0.1
+              write (41,102) i,plu(k(i,2)),(k(i,j),j=1,4),(P(i,j),j=1,5)
+     6                                               ,(V(i,j),j=1,3)
                endif
               enddo
           return
@@ -452,12 +468,14 @@ c
       integer mint
       double precision VINT
       COMMON/PYINT1/MINT(400),VINT(400)
-       real v4pr(4),v4el(4),v4ne(4),v4pip(4),v4pim(4),v4pi0(4)
-     6 ,v4rop(4),v4ro0(4),v4ome(4),tmp4(4),qiu4(4),vmass,vdotm
+       real v4pr(4),v4el(4),v4el2(4),v4po(4),v4ne(4)
+     6 ,v4pip(4),v4pim(4),v4pi0(4)
+     6 ,v4rop(4),v4ro0(4),v4ome(4),tmp4(4),qiu4(4),vmass2,vdotm,tnorm(4)
        real PolarTheta,Azimuthalphi,anu,zmin,mismas
        integer i,part_id
        logical lOK,hOK
        call VZERO(gnele,14)
+       call VZERO(gnpos,10)
        call VZERO(gnpi0,44)
        call VZERO(iproctpe,8)
 c
@@ -478,6 +496,7 @@ c
          SELECT CASE (part_id)  
          CASE (11) ! electron
           gnele=gnele+1
+          if(gnele.eq.1) then
           v4el(1)=P(i,1)
           v4el(2)=P(i,2)
           v4el(3)=P(i,3)
@@ -486,6 +505,27 @@ c
           gelet=PolarTheta(v4el(1),v4el(2),v4el(3))
           gelef=Azimuthalphi(v4el(1),v4el(2))
           nsele=k(k(i,3),2)
+          else
+          v4el2(1)=P(i,1)
+          v4el2(2)=P(i,2)
+          v4el2(3)=P(i,3)
+          v4el2(4)=P(i,4)
+          gele2=v4el2(4)
+          gelt2=PolarTheta(v4el2(1),v4el2(2),v4el2(3))
+          gelf2=Azimuthalphi(v4el2(1),v4el2(2))
+          nsel2=k(k(i,3),2)
+         endif
+c
+         CASE (-11) ! positron
+          gnpos=gnpos+1
+          v4po(1)=P(i,1)
+          v4po(2)=P(i,2)
+          v4po(3)=P(i,3)
+          v4po(4)=P(i,4)
+          gpose=v4po(4)
+          gpost=PolarTheta(v4po(1),v4po(2),v4po(3))
+          gposf=Azimuthalphi(v4po(1),v4po(2))
+          nspos=k(k(i,3),2)
          CASE (2112) ! neutron
           gnneu=gnneu+1
           v4ne(1)=P(i,1)
@@ -609,6 +649,11 @@ c
 c
 c          fill relevant mismases
 c
+          if(gnpos.gt.0.and.gele2.gt.0) then
+           call vsumm(v4el2,v4po,tnorm,4)
+           gpmas=vmass2(tnorm)
+          endif
+c
             if(gnpip.gt.0) gpipm=mismas(qiu4,v4pip)
             if(gnpim.gt.0) gpimm=mismas(qiu4,v4pim)
             if(gnpi0.gt.0) gpi0m=mismas(qiu4,v4pi0)
@@ -618,7 +663,24 @@ c
 c            if((gnpip.gt.0.and.gpipe/(cl_beam_energy-gelee).gt.0.3).or.
 c     6      (gnpi0.gt.0.and.gpi0e/(cl_beam_energy-gelee).gt.0.3).or.
 c     6      (gnpim.gt.0.and.gpime/(cl_beam_energy-gelee).gt.0.3)) then
-              lOK=.TRUE.  ! write everything
+              if(cl_pid.eq.13) then
+               if(gpost*57.3.gt.cl_tmin.and.gelet*57.3.gt.cl_tmin)
+c (gpost*57.3.gt.cl_tmin.and.gelt2*57.3.gt.cl_tmin).or.
+c     6            (gpost*57.3.gt.cl_tmin.and.gelet*57.3.gt.cl_tmin))  ! e+e- in the forward detector
+     6            lOK=.TRUE. 
+              else if(cl_pid.eq.11) then 
+               if(gpost*57.3.gt.cl_tmin.or.gelet*57.3.gt.cl_tmin.or.
+     6            gelt2*57.3.gt.cl_tmin) then ! e+ or e- in the forward detector
+                  lOK=.TRUE. 
+c              print *,'angles',gelet*57.3,gpost*57.3,gelt2*57.3
+                 endif
+              else if(cl_pid.eq.-211) then 
+               if(gelet*57.3.gt.cl_tmin.or.gelt2*57.3.gt.cl_tmin.or.
+     6            gpimt*57.3.gt.cl_tmin) ! pi- or e- in the forward detector
+     6            lOK=.TRUE. 
+              else
+               lOK=.TRUE.  ! write everything
+              endif
 c            endif
 cccc            lOK=.TRUE.
           endif
@@ -715,6 +777,8 @@ c
 c     defaults
       cl_rndm = .FALSE. 
       cl_zpos = 0.0  
+      cl_zwidth = 5.0
+      cl_rast=0.01  
       cl_triggers = 100  
       cl_beam_energy=10.6   ! def 
       cl_beam='gamma/e-'     ! electron 
@@ -725,6 +789,9 @@ c     defaults
       cl_verb=0
       cl_radgen=.FALSE.
       cl_dis=.FALSE.
+      cl_pid=0
+      cl_tmin=5.0
+      cl_emin=1.0
 c
       numopts  = IARGC()
 c      
@@ -760,6 +827,18 @@ c
         elseif(cnumber.eq.'--beam'.and.i.lt.numopts) then
            i=i+1
            CALL GETARG(i,cl_beam)
+        elseif(cnumber.eq.'--tmin'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_tmin=valnum(cnumber)
+        elseif(cnumber.eq.'--zwidth'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_zwidth=valnum(cnumber)
+        elseif(cnumber.eq.'--rast'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_rast=valnum(cnumber)
         elseif(cnumber.eq.'--radgen') then
            cl_radgen=.TRUE.
         elseif(cnumber.eq.'--dis') then
@@ -768,6 +847,10 @@ c
            i=i+1
            CALL GETARG(i,cnumber)
            cl_beam_energy=valnum(cnumber)           
+        elseif(cnumber.eq.'--pid'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_pid=valnum(cnumber)           
         elseif(cnumber.eq.'--zpos'.and.i.lt.numopts) then
            i=i+1
            CALL GETARG(i,cnumber)
@@ -791,12 +874,19 @@ c
         print *,'  --nmax nevents     200      number of ev in 1 file '
         print *,'  --beam beam_type    gamma/e-     e- beam '
         print *,'     --targ target         p+       n0 for neutron '
-        print *,'  --ebeam beam_energy     5.754  e- momentum in GeV '
-        print *,'  --zpos  z_position      0.0    e- momentum in GeV '
+        print *,'  --ebeam beam_energy     10.6  e- momentum in GeV '
+        print *,'  --zpos  z_position      0.0   target pos. in cm '
+        print *,'  --zwidth  5.0     target length in cm'
+        print *,'  --rast    0.01    beam diameter in cm'
         print *,'  --radgen                   include radgen'
         print *,'  --path hisid          w9/p       write dir  '
         print *,'  --print nprint       1000   print nprint event '
         print *,'  --dis                .FALSE.     all dis events in '
+        print *,'  --pid      0     write all events '
+        print *,'            13      with e- & e+ in forward det.'
+        print *,'            11   write e+ or e- in the forward det. '
+        print *,'           -211  write pi- and e- in the forward det.'
+        print *,'  --tmin    5      minimum angle in degree for e-,e+ '
         print *,'  --v     verblev       0     verbos. level '
         return
         end
@@ -923,29 +1013,25 @@ c
       character*5  cdis
       character*12  cxsec
       character*21  ccuts
-      real cl_emin,cl_tmin
-      integer cl_pid
       real cl_pol
       data cl_pol/0.0/
 c
 c
       integer jc,m,ncdis
       write (6,*),'CKIN',(ckin(m),m=69,76)
-      cl_tmin=ckin(69)
-      cl_emin=ckin(73)
 ccc
-      print *,'make the data file name',cl_beam_energy
+      print *,'make the data file name',cl_beam_energy,cl_emin,cl_tmin 
       print *,'************************'
 c
       if(cl_beam_energy.lt.10.0) then
-      write(ccuts,'(A,F5.3,A,F3.2,A,F3.2)') 'e',cl_beam_energy,
+      write(ccuts,'(A,F5.3,A,F3.2,A,F3.1)') 'e',cl_beam_energy,
      6'.emin',cl_emin,'tmin',cl_tmin 
       else
-      write(ccuts,'(A,F6.3,A,F4.2,A,F3.2)') 'e',cl_beam_energy,
+      write(ccuts,'(A,F6.3,A,F4.2,A,F3.1)') 'e',cl_beam_energy,
      6'.emn',cl_emin,'tmn',cl_tmin 
       endif
 c
-      print *,'get the x-section for ',PARI(1)
+      print *,'get the x-section for ',PARI(1),ccuts
 c
       if(cl_beam_energy.lt.15.0) then
       write(cxsec,'(A,F7.2,A)') '.xs',PARI(1)*1000000.0,'nb'
@@ -983,3 +1069,11 @@ c       write (cdis,'(A,F3.1,I4)') '.',cl_zmin,cl_pid
      6cl_target(1:2)//cpol//ccuts//cxsec//cdis(1:ncdis)//'.'
       print *,'filename ',datfilename
       end
+C**********************************************************************
+C      random number generator
+C**********************************************************************
+         real function random_num()
+         implicit none
+         random_num=RAND(0)
+         return
+         end

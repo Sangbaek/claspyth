@@ -17,6 +17,11 @@
       INTEGER gnele,gelebits,ghpar,gproh,geleh
       COMMON /ELEGEN/ gnele,gelebits,ghpar,gproh,geleh,gelee,gelet
      +,gelef,gelex,geley,gelez,gelewgt,gxb,gq2,gw
+*
+      REAL gpose,gpost,gposf,gpmas,gele2,gelt2,gelf2
+      INTEGER gnpos,nspos,nsel2
+      COMMON /POSGEN/ gnpos,nspos,nsel2,
+     +gpose,gpost,gposf,gpmas,gele2,gelt2,gelf2
 c234567890123456789012345678901234567890123456789012345678901234567890123456
 *
       REAL gpi0e,gpi0t,gpi0f,gpipe,gpipt,gpipf,gpime,gpimt,gpimf,gproe

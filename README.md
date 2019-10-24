@@ -7,6 +7,7 @@ To install
 `cd claspyth-nocernlib` 
 `make`
 
+Need to define the path for the pdf sets using env variable CLASPYTHIA_DECLIST to define the path to  directory containing the decay-list file pythdeclist-curr.dat
 
 Need to create a tmp directory and define the path for the pdf sets using env variable CLASDIS_PDF to define the path to pdf directory
 
