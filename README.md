@@ -2,7 +2,7 @@
 PYTHIA based generator for clas12 (HERMES version with some changes)
 
 To install
-`git clone https://github.com/JeffersonLab/claspyth-nocernlib.git`
+`git clone https://github.com/JeffersonLab/claspyth.git`
 
 `cd claspyth` 
 `make`
