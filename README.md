@@ -1,10 +1,10 @@
-# claspyth-nocernlib
+# claspyth (nocernlib version)
 PYTHIA based generator for clas12 (HERMES version with some changes)
 
 To install
 `git clone https://github.com/JeffersonLab/claspyth-nocernlib.git`
 
-`cd claspyth-nocernlib` 
+`cd claspyth` 
 `make`
 
 Need to define the path for the pdf sets using env variable CLASPYTHIA_DECLIST to define the path to  directory containing the decay-list file pythdeclist-curr.dat
