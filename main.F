@@ -106,8 +106,13 @@ c       call pylist(12)
       call getenv('CLASPYTHIA_DECLIST',claspythfiles)
       write(fileinp,'(A,A)') trim(claspythfiles),'/pythdeclist-curr.dat'
        OPEN (unit=77,file=fileinp,status='UNKNOWN')
-       OPEN (unit=77,file='pythdeclist-curr.dat',status='UNKNOWN')
-       CALL PYUPDA(1,77)
+       if(cl_dumpdecayfile) then
+        print *,'WRITING DECAY file PYUPDA', fileinp
+        CALL PYUPDA(1,77)
+       else
+        print *,'READING DECAY file PYUPDA', fileinp
+        CALL PYUPDA(2,77)
+       endif 
        call PYLIST(12)
        close(77)
 c       stop
@@ -792,6 +797,7 @@ c     defaults
       cl_pid=0
       cl_tmin=5.0
       cl_emin=1.0
+      cl_dumpdecayfile=.FALSE.
 c
       numopts  = IARGC()
 c      
@@ -841,6 +847,8 @@ c
            cl_rast=valnum(cnumber)
         elseif(cnumber.eq.'--radgen') then
            cl_radgen=.TRUE.
+        elseif(cnumber.eq.'--dumpdecayfile') then
+           cl_dumpdecayfile=.TRUE.
         elseif(cnumber.eq.'--dis') then
            cl_dis=.TRUE.
         elseif(cnumber.eq.'--ebeam'.and.i.lt.numopts) then
@@ -882,6 +890,7 @@ c
         print *,'  --path hisid          w9/p       write dir  '
         print *,'  --print nprint       1000   print nprint event '
         print *,'  --dis                .FALSE.     all dis events in '
+        print *,'  --dumpdecayfile  .FALSE.  write the decay file '
         print *,'  --pid      0     write all events '
         print *,'            13      with e- & e+ in forward det.'
         print *,'            11   write e+ or e- in the forward det. '
