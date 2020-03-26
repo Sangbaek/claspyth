@@ -104,7 +104,7 @@ c       call pylist(12)
          endif
        endif 
       call getenv('CLASPYTHIA_DECLIST',claspythfiles)
-      write(fileinp,'(A,A)') trim(claspythfiles),'/pythdeclist-curr.dat'
+      write(fileinp,'(A,A)') trim(claspythfiles),'pythdeclist-curr.dat'
        OPEN (unit=77,file=fileinp,status='UNKNOWN')
        if(cl_dumpdecayfile) then
         print *,'WRITING DECAY file PYUPDA', fileinp
@@ -489,10 +489,10 @@ c
        lOK=.FALSE.
 c
        do i=1,N
-c$$$        if(k(i,2).eq.213.or.k(i,2).eq.113) then
-c$$$           call pylist(1)
-c$$$           hOK=.TRUE.
-c$$$        endif
+        if(k(i,2).eq.cl_pid) then
+           call pylist(1)
+           hOK=.TRUE.
+        endif
         if(k(i,2).gt.9999.or.k(i,2).lt.-9999) k(i,2)=0 
 c
         if(k(i,1).lt.21) then
@@ -665,9 +665,7 @@ c
             if(gnro0.gt.0) gro0m=mismas(qiu4,v4ro0)
             if(gnrop.gt.0) gropm=mismas(qiu4,v4rop)
             if(gnome.gt.0) gomem=mismas(qiu4,v4rop)
-c            if((gnpip.gt.0.and.gpipe/(cl_beam_energy-gelee).gt.0.3).or.
-c     6      (gnpi0.gt.0.and.gpi0e/(cl_beam_energy-gelee).gt.0.3).or.
-c     6      (gnpim.gt.0.and.gpime/(cl_beam_energy-gelee).gt.0.3)) then
+c
               if(cl_pid.eq.13) then
                if(gpost*57.3.gt.cl_tmin.and.gelet*57.3.gt.cl_tmin)
 c (gpost*57.3.gt.cl_tmin.and.gelt2*57.3.gt.cl_tmin).or.
@@ -683,11 +681,16 @@ c              print *,'angles',gelet*57.3,gpost*57.3,gelt2*57.3
                if(gelet*57.3.gt.cl_tmin.or.gelt2*57.3.gt.cl_tmin.or.
      6            gpimt*57.3.gt.cl_tmin) ! pi- or e- in the forward detector
      6            lOK=.TRUE. 
+              else if(cl_pid.eq.443) then  ! J/Psi
+	        if(hOK)lOK=.TRUE.   
+              else if(cl_pid.eq.213) then  ! only rho+
+	        if(hOK)lOK=.TRUE.   
               else
                lOK=.TRUE.  ! write everything
               endif
 c            endif
 cccc            lOK=.TRUE.
+              else if(cl_pid.eq.-211) then 
           endif
        endif
 c          
@@ -895,6 +898,7 @@ c
         print *,'            13      with e- & e+ in forward det.'
         print *,'            11   write e+ or e- in the forward det. '
         print *,'           -211  write pi- and e- in the forward det.'
+        print *,'           443  write J/Psi'
         print *,'  --tmin    5      minimum angle in degree for e-,e+ '
         print *,'  --v     verblev       0     verbos. level '
         return
