@@ -5,9 +5,9 @@ OBJ=  f2allm.o f2pyth.o fdilut.o gmc_random.o mkasym.o mkf2.o mkr.o pyth_xsec.o 
 FOR   =  -lstdc++  -lgfortran
 CERNLIBS =  -L/apps/cernlib/x86_64_rhel6_4.7.2/2005/lib -lmathlib  -lpacklib
 claspyth : $(OBJ)
-	 gfortran  -o -fno-automatic -ffixed-line-length-none -fno-second-underscore -o claspyth $(OBJ) $(FOR)  
+	 gfortran -std=legacy  -o -fno-automatic -ffixed-line-length-none -fno-second-underscore -o claspyth $(OBJ) $(FOR)  
 $(OBJ) : %.o: %.F
-	gfortran   -DLinux -fno-automatic -ffixed-line-length-none -fno-second-underscore  -I. -I./include -c $< -o $@  
+	gfortran  -std=legacy  -DLinux -fno-automatic -ffixed-line-length-none -fno-second-underscore  -I. -I./include -c $< -o $@  
 
 clean:
 	rm -f claspyth   $(OBJ)
