@@ -48,30 +48,51 @@ c
        v4el0(3)=cl_beam_energy
        v4el0(4)=cl_beam_energy
 c
-
+         if(cl_prom.gt.0) then ! redefine the proton value
+            v4pr0(3)=-cl_prom
+            v4pr0(4)=sqrt(v4pr0(3)**2+0.88035)
+         endif
+c
 C...Read parameters for PYINIT call (frame, beam particle, target particle,
 C...energy).
-       FRAME='FIXT'
+       FRAME='3MOM'
+c
+c      defining the 5 mom P(1,1-5) for electron and P(2,1-5) for nucleon
+c
+        do i_part_2_lund=1,3
+         P(1,i_part_2_lund)=v4el0(i_part_2_lund)
+         P(2,i_part_2_lund)=v4pr0(i_part_2_lund)
+        enddo
+c
        BEAM=cl_beam
        TARGET=cl_target
        PBEAM=cl_beam_energy
        PRINT *,'FRAME,BEAM,TARGET,PBEAM',FRAME,BEAM,TARGET,PBEAM
-C...Read parameters for PYTHIA-Model = which generation is done     
-       READ(*,*) Model
+C       
+C       
+C       
+C...Read parameters for PYTHIA-Model = which generation is done
+       print *,'READING PYTHIA input values from ./PYTHIA-input.dat'
+       OPEN(unit=61,file='./PYTHIA-input.dat',status='unknown')     
+       READ(61,*) Model
 C...Read parameters of radcorr: do radcorr swith also operated look-up table operation  
-       READ(*,*) qedrad
+       READ(61,*) qedrad
 C...Read min/max y of generation range      
-       READ(*,*) mcSet_YMin,mcSet_YMax
+       READ(61,*) mcSet_YMin,mcSet_YMax
 C...Read min/max Q2 of generation range      
-       READ(*,*) mcSet_Q2Min,mcSet_Q2Max
+       READ(61,*) mcSet_Q2Min,mcSet_Q2Max
 C...Read target type mass and charge
-       READ(*,*) mcSet_TarA,mcSet_TarZ
+       READ(61,*) mcSet_TarA,mcSet_TarZ
 C...Read information for cross section used in radgen
-       READ(*,*) genSet_FStruct,genSet_R
+       READ(61,*) genSet_FStruct,genSet_R
 C...Loop over reading and setting parameters/switches.
-  100  READ(*,'(A)',END=200) PARAM
+  100  READ(61,'(A)',END=200) PARAM
        CALL PYGIVE(PARAM)
        GOTO 100
+       close(61)
+C       
+C       
+C
 C...Initialize PYTHIA.      
   200  write(*,*) 'NOW all parameters are read by PYTHIA'
 C       call pylist(11)
@@ -117,7 +138,7 @@ c       call pylist(12)
        close(77)
 c       stop
 c
-       call pyinit ('FIXT',beam,target, pbeam)
+       call pyinit (FRAME,beam,target, pbeam)
 c
 c     read the random seed
 c
@@ -789,6 +810,7 @@ c     defaults
       cl_rast=0.01  
       cl_triggers = 100  
       cl_beam_energy=10.6   ! def 
+      cl_prom=0.0           ! def 0-clas12
       cl_beam='gamma/e-'     ! electron 
       cl_hispath='pythi'    ! (w9)
       cl_target='p+'     ! (def proton target)
@@ -858,6 +880,10 @@ c
            i=i+1
            CALL GETARG(i,cnumber)
            cl_beam_energy=valnum(cnumber)           
+        elseif(cnumber.eq.'--prom'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_prom=valnum(cnumber)           
         elseif(cnumber.eq.'--pid'.and.i.lt.numopts) then
            i=i+1
            CALL GETARG(i,cnumber)
@@ -875,6 +901,8 @@ c
         if(i.lt. numopts) goto 1
  2      continue
         call printvalues
+c	
+c
         return 
         end
 c
@@ -886,6 +914,7 @@ c
         print *,'  --beam beam_type    gamma/e-     e- beam '
         print *,'     --targ target         p+       n0 for neutron '
         print *,'  --ebeam beam_energy     10.6  e- momentum in GeV '
+        print *,'  --prom  proton mom   0-clas12  p+ momentum in GeV '
         print *,'  --zpos  z_position      0.0   target pos. in cm '
         print *,'  --zwidth  5.0     target length in cm'
         print *,'  --rast    0.01    beam diameter in cm'
