@@ -43,6 +43,8 @@ c ... force block data modules to be read
        GenLUT=.false.
        emass=PYMASS(11)
        rccorr =1.
+c
+       call RNDMSEED()
        call CL_OPTIONS          ! command line processing
 c
        v4el0(3)=cl_beam_energy
@@ -1119,3 +1121,21 @@ C**********************************************************************
          random_num=RAND(0)
          return
          end
+c
+       subroutine RNDMSEED()
+       implicit none
+       integer*4 now(3),ifilenum
+       integer iran,irannom
+       real rand,rnd
+c
+c
+          call itime(now)     ! now(1)=hour, (2)=minute, (3)=second
+           CALL SRAND(now(3))
+           irannom=10*now(3)
+          print *,'Rndm numb->',irannom,now(1),now(2),now(3),rand()
+           DO 100 iran=1,irannom
+ 100       RND=rand()
+c
+	   return
+	   end
+
