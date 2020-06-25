@@ -24,7 +24,8 @@ To get more command line options
    --trig nevents         10      number of triggers
    --nmax nevents     200      number of ev in 1 file
    --beam beam_type    gamma/e-     e- beam
-      --targ target         p+       n0 for neutron
+   --targ target         p+       n0 for neutron
+   --prom  proton mom   0-clas12  p+ momentum in GeV 
    --ebeam beam_energy     10.6  e- momentum in GeV
    --zpos  z_position      0.0    e- momentum in GeV
    --radgen                   include radgen
