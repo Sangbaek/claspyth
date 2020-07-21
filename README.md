@@ -7,9 +7,9 @@ To install
 `cd claspyth` 
 `make`
 
-Need to define the path for the pdf sets using env variable CLASPYTHIA_DECLIST to define the path (/ in the end needed) to  directory containing the decay-list file pythdeclist-curr.dat
+Need to define the path for the pdf sets using env variable CLASPYTHIA_DECLIST to define the path (/ in the end needed) to  directory containing the decay-list file pythdeclist-curr.dat and the input file PYTHIA-input.dat (current directory)
 
-Need to create a tmp directory and define the path for the pdf sets using env variable CLASDIS_PDF to define the path to pdf directory
+Need to create a tmp directory if running without --docker option
 
 Example
 `./claspyth --trig 10000000 --nmax 10000  < input.10.6gev.with-comments`
