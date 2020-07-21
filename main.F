@@ -74,8 +74,10 @@ C
 C       
 C       
 C...Read parameters for PYTHIA-Model = which generation is done
-       print *,'READING PYTHIA input values from ./PYTHIA-input.dat'
-       OPEN(unit=61,file='./PYTHIA-input.dat',status='unknown')     
+      call getenv('CLASPYTHIA_DECLIST',claspythfiles)
+      write(fileinp,'(A,A)') trim(claspythfiles),'PYTHIA-input.dat'
+       print *,'READING PYTHIA input values from',claspythfiles,fileinp
+       OPEN(unit=61,file=fileinp,status='unknown')     
        READ(61,*) Model
 C...Read parameters of radcorr: do radcorr swith also operated look-up table operation  
        READ(61,*) qedrad
@@ -126,8 +128,8 @@ c       call pylist(12)
            MSTP(199)=1
          endif
        endif 
-      call getenv('CLASPYTHIA_DECLIST',claspythfiles)
       write(fileinp,'(A,A)') trim(claspythfiles),'pythdeclist-curr.dat'
+       print *,'Reading PYTHIA decay settings',claspythfiles,fileinp
        OPEN (unit=77,file=fileinp,status='UNKNOWN')
        if(cl_dumpdecayfile) then
         print *,'WRITING DECAY file PYUPDA', fileinp
@@ -145,7 +147,7 @@ c
 c     read the random seed
 c
 c      dir='/group/gpd/claspith/'
-      if(cl_rndm) then
+      if(.not.cl_docker.and.cl_rndm) then
          print *,'read random seed from','tmp/'//
      6cl_hispath(1:4)//cl_target(1:2)//'.txti'
          OPEN(unit=42,file='tmp/'//
@@ -258,10 +260,12 @@ c            call HFNT(22)
 c
 c
       close(41)
+        if(.not.cl_docker) then
         OPEN(unit=42,file='tmp/'//
      6cl_hispath(1:4)//cl_target(1:2)//'.txt',FORM='UNFORMATTED')
         call PYRGET(42,0)
         CLOSE(42)
+	endif
 C...Print the Pythia cross section which is needed to get an absolute 
 C   normalisation the number is in microbarns
        write(*,*)"Pythia total cross section normalisation",
@@ -350,8 +354,12 @@ c
            ifile=ifile+1
            itotal=0
           endif
-
+c
           if (lFirst) then   ! open the file
+           if(cl_docker) then
+             write(fname,'(A)') 'claspyth.dat'
+             cl_fileev=cl_triggers+100
+           else
              call get_datfilename()
 
              jc = 0
@@ -376,19 +384,13 @@ c
             write(6,'(A,i4,A)') datfilename(1:jc),ifile,'.dat'
            endif 
 
-
+           endif ! docker check
+             print *, 'open file name ',fname
              OPEN(unit=41,file=fname,status='unknown')
              lFirst=.FALSE.
           endif
 c
                 itotal=itotal+1
-
-
-            if (lFirst) then   ! open the file
-             OPEN(unit=41,file=datfilename,status='unknown')
-             lFirst=.FALSE.
-            endif
-c
 c
                if(il.eq.2) then
                  j=0
@@ -825,6 +827,7 @@ c     defaults
       cl_tmin=5.0
       cl_emin=1.0
       cl_dumpdecayfile=.FALSE.
+      cl_docker=.FALSE.
 c
       numopts  = IARGC()
 c      
@@ -896,6 +899,8 @@ c
            cl_zpos=valnum(cnumber)           
         elseif(cnumber.eq.'--rndm') then
            cl_rndm=.TRUE.
+        elseif(cnumber.eq.'--docker') then
+           cl_docker=.TRUE.
         else
           call printusage
           stop
@@ -932,6 +937,7 @@ c
         print *,'           443  write J/Psi'
         print *,'  --tmin    5      minimum angle in degree for e-,e+ '
         print *,'  --v     verblev       0     verbos. level '
+        print *,'     --docker  .FALSE. gen a single file claspyth.dat'
         return
         end
 
