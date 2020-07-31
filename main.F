@@ -75,7 +75,7 @@ C
 C       
 C...Read parameters for PYTHIA-Model = which generation is done
       call getenv('CLASPYTHIA_DECLIST',claspythfiles)
-      write(fileinp,'(A,A)') trim(claspythfiles),'PYTHIA-input.dat'
+      write(fileinp,'(A,A)') trim(claspythfiles),'/PYTHIA-input.dat'
        print *,'READING PYTHIA input values from',claspythfiles,fileinp
        OPEN(unit=61,file=fileinp,status='unknown')     
        READ(61,*) Model
@@ -128,7 +128,7 @@ c       call pylist(12)
            MSTP(199)=1
          endif
        endif 
-      write(fileinp,'(A,A)') trim(claspythfiles),'pythdeclist-curr.dat'
+      write(fileinp,'(A,A)') trim(claspythfiles),'/pythdeclist-curr.dat'
        print *,'Reading PYTHIA decay settings',claspythfiles,fileinp
        OPEN (unit=77,file=fileinp,status='UNKNOWN')
        if(cl_dumpdecayfile) then
