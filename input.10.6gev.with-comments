@@ -114,7 +114,7 @@ PARP(95)=0.
 PARP(96)=3.
 PARP(97)=1.
 PARP(98)=0.75
-PARP(99)=0.4   ! Gaussian, width given in PARP(99) , upper cut-off in PARP(100)
+PARP(99)=0.64   ! Gaussian, width given in PARP(99) , upper cut-off in PARP(100)
 PARP(100)=5
 PARP(102)=0.5
 PARP(103)=0.5
@@ -129,14 +129,14 @@ PARP(165)=0.5  !(D=0.5) a simple multiplicative factor applied to the cross sect
 PARP(166)=0.67597
 ! Now come all the switches for Jetset
 PARJ(1)=0.029
-PARJ(2)=0.2
-PARJ(3)=1.2
+PARJ(2)=0.3  ! default
+PARJ(3)=0.4  !default
 PARJ(4)=0.05
 PARJ(5)=0.5
 PARJ(6)=0.5
 PARJ(7)=0.5
 PARJ(11)=0.7          ! default PARJ(11) fraction of spin 1 light mesons (rho)
-PARJ(12)=0.6          !is the probability that a strange meson has spin 1.
+PARJ(12)=0.75          !is the probability that a strange meson has spin 1, put 0.75 to  get Kaon suppression.
 PARJ(21)= 0.4         !(D = 0.36 GeV) corresponds to the width of Gaussian px and pytransverse momentum dist.s for primary hadrons. See also PARJ(22) -PARJ(24)
 PARJ(23)=0.01
 PARJ(24)=2.0
