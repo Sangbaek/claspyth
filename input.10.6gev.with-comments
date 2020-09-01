@@ -137,7 +137,7 @@ PARJ(6)=0.5
 PARJ(7)=0.5
 PARJ(11)=0.7          ! default PARJ(11) fraction of spin 1 light mesons (rho)
 PARJ(12)=0.75          !is the probability that a strange meson has spin 1, put 0.75 to  get Kaon suppression.
-PARJ(21)= 0.64         !(D = 0.36 GeV) corresponds to the width of Gaussian px and pytransverse momentum dist.s for primary hadrons. See also PARJ(22) -PARJ(24)
+PARJ(21)= 0.5         !(D = 0.36 GeV) corresponds to the width of Gaussian px and pytransverse momentum dist.s for primary hadrons. See also PARJ(22) -PARJ(24)
 PARJ(23)=0.01
 PARJ(24)=2.0
 PARJ(32)=1.0
