@@ -22,6 +22,7 @@ To get more command line options
 ```
         option  value      default    comment
    --trig nevents         10      number of triggers
+   --seed seed_number     0      use the local time as seed
    --nmax nevents     200      number of ev in 1 file
    --beam beam_type    gamma/e-     e- beam
    --targ target         p+       n0 for neutron
