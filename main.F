@@ -798,7 +798,7 @@ c
        SUBROUTINE CL_OPTIONS
        implicit none
 #include "options.inc"
-       integer i,iran,irannom
+       integer i,iran,irannom,ivalnum
        real VEC1,valnum
        character*20 cnumber
        integer  numopts
@@ -845,7 +845,7 @@ c
         elseif(cnumber.eq.'--seed'.and.i.lt.numopts) then
           i=i+1
           CALL GETARG(i,cnumber)
-          cl_seed=valnum(cnumber)
+          cl_seed=ivalnum(cnumber)
         elseif(cnumber.eq.'--nmax'.and.i.lt.numopts) then
           i=i+1
           CALL GETARG(i,cnumber)
@@ -1006,6 +1006,55 @@ c     translate the decimal portion
 
 10    if(segno)valnum=-valnum
 
+      return
+      end     
+c
+      integer function ivalnum(str)
+c     return the real value contained into a string
+
+      implicit integer (k-l)
+      character *(*) str
+      logical segno
+      double precision valnum
+      
+
+      segno=.false.
+      valnum=0.00
+      lu=length(str)
+      
+c     check the number sign
+      if(str(1:1).eq.'-')then
+      segno=.true.
+      str=str(2:lu)
+      lu=lu-1
+      end if
+
+c     check if number is float or integer
+      if(index(str,'.').ne.0)then
+      iin=index(str,'.')-1
+      else
+      iin=lu
+      end if
+
+      ifr=lu-(iin+1)
+
+c     translate the integer portion
+      doi=1,iin  
+      k=ichar(str(i:i))-48
+      valnum=valnum+float(k)*10.00**float(iin-i)
+      end do         
+
+      if(iin.eq.lu)goto 10
+      str=str(iin+2:lu)
+
+c     translate the decimal portion
+      doi=1,ifr  
+      k=ichar(str(i:i))-48
+      valnum=valnum+float(k)/10.00**float(i)
+      end do
+
+10    if(segno)valnum=-valnum
+       ivalnum=int(valnum)
       return
       end     
 c
