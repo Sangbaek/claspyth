@@ -409,15 +409,15 @@ c
 c 101      FORMAT(2x,I10,2F4.0,2I3,5F6.3)
  101      FORMAT(2x,I10,2I6,2F5.1,I5,F10.3,2I5,3E14.7)
  102      FORMAT(2x,I3,F4.0,I5,I7,2I3,5F10.4,2X,5F10.4)
-          xelex=(random_num()-0.5)*cl_rast
-          yeley=(random_num()-0.5)*cl_rast
+          xelex=(random_num()-0.5)*cl_rast+cl_xpos
+          yeley=(random_num()-0.5)*cl_rast+cl_ypos
           zelez=cl_zpos+(random_num()-0.5)*cl_zwidth
               do i=1,N
                if(il.eq.2) then
                  if(k(i,1).lt.11) then   ! save space
                    write(41,110) (k(i,j),j=1,5) 
                    write(41,112) (p(i,j),j=1,5) 
-                   write(41,112) 0.0,0.0,cl_zpos,0.0,0.0
+                   write(41,112) cl_xpos,cl_ypos,cl_zpos,0.0,0.0
                  endif 
                else
                  V(i,1)=xelex+V(i,1)*0.1
@@ -808,6 +808,8 @@ c    command line processing
 c
 c     defaults
       cl_rndm = .FALSE. 
+      cl_xpos = 0.0  
+      cl_ypos = 0.0  
       cl_zpos = 0.0  
       cl_zwidth = 5.0
       cl_rast=0.01  
@@ -897,6 +899,14 @@ c
            i=i+1
            CALL GETARG(i,cnumber)
            cl_pid=valnum(cnumber)           
+        elseif(cnumber.eq.'--xpos'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_xpos=valnum(cnumber)           
+        elseif(cnumber.eq.'--ypos'.and.i.lt.numopts) then
+           i=i+1
+           CALL GETARG(i,cnumber)
+           cl_ypos=valnum(cnumber)           
         elseif(cnumber.eq.'--zpos'.and.i.lt.numopts) then
            i=i+1
            CALL GETARG(i,cnumber)
@@ -927,7 +937,9 @@ c
         print *,'     --targ target         p+       n0 for neutron '
         print *,'  --ebeam beam_energy     10.6  e- momentum in GeV '
         print *,'  --prom  proton mom   0-clas12  p+ momentum in GeV '
-        print *,'  --zpos  z_position      0.0   target pos. in cm '
+        print *,'  --xpos  x_position      0.0   beam x pos. in cm '
+        print *,'  --ypos  y_position      0.0   beam y pos. in cm '
+        print *,'  --zpos  z_position      0.0   target z pos. in cm '
         print *,'  --zwidth  5.0     target length in cm'
         print *,'  --rast    0.01    beam diameter in cm'
         print *,'  --radgen                   include radgen'

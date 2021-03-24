@@ -28,7 +28,9 @@ To get more command line options
    --targ target         p+       n0 for neutron
    --prom  proton mom   0-clas12  p+ momentum in GeV 
    --ebeam beam_energy     10.6  e- momentum in GeV
-   --zpos  z_position      0.0    e- momentum in GeV
+   --xpos  z_position      0.0   beam x pos. in cm 
+   --ypos  y_position      0.0   beam y pos. in cm
+   --zpos  z_position      0.0   target z pos. in cm 
    --radgen                   include radgen
    --path hisid          w9/p       write dir
    --print nprint       1000   print nprint event
