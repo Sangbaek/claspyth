@@ -3,7 +3,7 @@ C...Double precision and integer declarations.
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
 #include "phydata1234.inc"
-      character*100  claspythfiles,fileinp
+      character*500  claspythfiles,fileinp
 
       INTEGER PYK,PYCHGE,PYCOMP
       REAL pyth_xsec,rccorr,sigobs,sigtrue
